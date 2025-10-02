@@ -8,10 +8,10 @@ const { Pool } = require("pg");
 
 const app = express();
 app.use(express.json());
-app.use(helmet());   // Security headers
-app.use(xss());      // Prevent XSS
+app.use(helmet());   // Security headers..
+app.use(xss());      // Prevent XSS..
 
-// 🔹 Database connection (Postgres)
+// Database connection (Postgres)..
 const db = new Pool({
   user: "postgres",
   host: "localhost",
@@ -20,7 +20,7 @@ const db = new Pool({
   port: 5432,
 });
 
-// 🔹 Middleware: JWT Authentication
+// JWT Authentication..
 function authenticate(req, res, next) {
   const token = req.headers["authorization"];
   if (!token) return res.status(403).json({ error: "No token provided" });
@@ -32,7 +32,7 @@ function authenticate(req, res, next) {
   });
 }
 
-// 🔹 Register User
+// Register User..
 app.post(
   "/register",
   [
@@ -59,7 +59,7 @@ app.post(
   }
 );
 
-// 🔹 Login User
+// Login route..
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
