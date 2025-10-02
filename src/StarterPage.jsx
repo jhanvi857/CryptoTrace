@@ -7,7 +7,7 @@ export default function StarterPage() {
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
           Cryptocurrency Intelligence & Threat Analysis
         </h1>
-        <p className="text-lg text-gray-400 max-w-2xl mb-8">
+        <p className="text-lg text-gray-401 max-w-2xl mb-8">{/*changed from 400 to 401*/}
           Track, cluster, and analyze cryptocurrency addresses linked with 
           criminal activities across the surface web, deep web, and dark net.  
           Stay ahead with autonomous data collection & forensic insights.
