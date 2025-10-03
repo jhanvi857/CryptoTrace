@@ -1,0 +1,9 @@
+# Dependencies
+/node_modules
+
+# Environment Variables / Secrets
+.env
+
+# Temporary/Editor Files (Recommended)
+*.txt
+.vscode
