@@ -1,0 +1,49 @@
+{
+  "records": [
+    {
+      "name": "John Doe",
+      "phone": "+91-9876543210",
+      "email": "johndoe@mail.com",
+      "wallet": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+      "bank_account": "HDFC-1234567890",
+      "transaction_amount": 5000,
+      "transaction_date": "2023-06-10"
+    },
+    {
+      "name": "Ali Khan",
+      "phone": "+44-7722334455",
+      "email": "ali.khan@mail.com",
+      "wallet": "0x53d284357ec70cE289D6D64134DfAc8E511c8a3D",
+      "bank_account": null,
+      "transaction_amount": 12000,
+      "transaction_date": "2023-06-12"
+    },
+    {
+      "name": "Maria Silva",
+      "phone": "+55-21-99887766",
+      "email": "maria@protonmail.com",
+      "wallet": "0x3f5CE5FBFe3E9af3971dD833D26BA9b5C936f0bE",
+      "bank_account": null,
+      "transaction_amount": 3000,
+      "transaction_date": "2023-06-15"
+    },
+    {
+      "name": "DarkMarket Ltd.",
+      "phone": null,
+      "email": "admin@darkmarket.onion",
+      "wallet": "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
+      "bank_account": "ICICI-987654321",
+      "transaction_amount": 15000,
+      "transaction_date": "2023-06-10"
+    },
+    {
+      "name": "CryptoExchangeX",
+      "phone": null,
+      "email": "support@cexchange.com",
+      "wallet": "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy",
+      "bank_account": "SBI-5566778899",
+      "transaction_amount": 25000,
+      "transaction_date": "2023-06-12"
+    }
+  ]
+}

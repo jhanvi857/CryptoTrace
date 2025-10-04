@@ -1,0 +1,66 @@
+{
+  "entities": [
+    {
+      "id": 1,
+      "name": "Alice Johnson",
+      "phone": "+1-555-123-4567",
+      "email": "alice.j@example.com",
+      "wallet": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+      "bank_account": "CHASE-987654321",
+      "risks": ["High transaction amount"],
+      "source": "file-upload"
+    },
+    {
+      "id": 2,
+      "name": "Bob Smith",
+      "phone": null,
+      "email": "bob.smith@mail.com",
+      "wallet": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+      "bank_account": null,
+      "risks": ["High transaction amount"],
+      "source": "file-upload"
+    }
+  ],
+  "clusters": [
+    {
+      "id": "cluster_1",
+      "members": [
+        "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+        "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+      ],
+      "type": "Suspicious Activity"
+    }
+  ],
+  "alerts": [
+    {
+      "entity": "Alice Johnson",
+      "risk": "High-risk wallet detected"
+    },
+    {
+      "entity": "Bob Smith",
+      "risk": "Suspicious transaction pattern"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+        "label": "Alice Johnson",
+        "type": "wallet"
+      },
+      {
+        "id": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "label": "Bob Smith",
+        "type": "wallet"
+      }
+    ],
+    "edges": [
+      {
+        "source": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+        "target": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "type": "transaction",
+        "amount": 35000
+      }
+    ]
+  }
+}
