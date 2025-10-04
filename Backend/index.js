@@ -207,3 +207,63 @@ app.get("/export", async (req, res) => {
 app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const crypto = require("crypto");
+
+// Transaction creator
+function createTransaction(payload) {
+  const hash = crypto.createHash("sha256")
+    .update(JSON.stringify(payload))
+    .digest("hex");
+  
+  return {
+    timestamp: Date.now(),
+    payload,
+    dataHash: hash
+  };
+}
+
+// Crypto wallet validation
+function isValidCryptoAddress(address) {
+  const btcRegex = /^(1|3|bc1)[a-zA-Z0-9]{25,39}$/;
+  const ethRegex = /^0x[a-fA-F0-9]{40}$/;
+  return btcRegex.test(address) || ethRegex.test(address);
+}
+
+// Entity Analysis + Alerts
+function analyzeRecords(records) {
+  const entities = [];
+  const clusters = new Set();
+  const alerts = [];
+
+  for (const rec of records) {
+    if (rec.name) entities.push({ type: "Name", value: rec.name });
+    if (rec.wallet) entities.push({ type: "Wallet", value: rec.wallet });
+    if (rec.phone) entities.push({ type: "Phone", value: rec.phone });
+    if (rec.email) entities.push({ type: "Email", value: rec.email });
+    if (rec.bank_account) entities.push({ type: "Bank Account", value: rec.bank_account });
+
+    if (rec.wallet && isValidCryptoAddress(rec.wallet)) {
+      if (rec.transaction_amount && rec.transaction_amount > 10000) {
+        clusters.add("High-value transactions");
+        alerts.push(`⚠ ${rec.wallet} made a high-value transaction`);
+      }
+
+      const btcRegex = /^(1|3|bc1)/;
+      if (btcRegex.test(rec.wallet)) {
+        clusters.add("Darknet wallets");
+        alerts.push(`⚠ ${rec.wallet} looks like a darknet BTC wallet`);
+      }
+    }
+
+    if (rec.email && rec.email.endsWith(".onion")) {
+      alerts.push(`⚠ Suspicious .onion email: ${rec.email}`);
+    }
+  }
+
+  return {
+    entities,
+    clusters: Array.from(clusters),
+    alerts
+  };
+}
