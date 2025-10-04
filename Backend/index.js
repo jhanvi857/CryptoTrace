@@ -1,104 +1,209 @@
+// Final: 
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { Pool } = require("pg");
+const multer = require("multer");
 const fs = require("fs");
-const { createObjectCsvWriter } = require("csv-writer");
-
+const { parse } = require("csv-parse");
+const supabase = require("./Routes/db");
+const fetch = require("node-fetch");
+const crypto = require("crypto");
+const getGraph = require("./Routes/graphRoute");
+const scraper = require("./scraper");
+const authRoutes = require("./server");
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-});
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+app.use("/auth",authRoutes);
+app.use("/api", getGraph);
 
-// BTC, ETH validation..
-function isValidCryptoAddress(address) {
-  const btcRegex = /^(1|3|bc1)[a-zA-Z0-9]{25,39}$/;
-  const ethRegex = /^0x[a-fA-F0-9]{40}$/;
-  return btcRegex.test(address) || ethRegex.test(address);
-}
-
-// Routes..
-app.get("/addresses", async (req, res) => {
-  try {
-    const { rows } = await pool.query("SELECT * FROM addresses ORDER BY last_seen DESC");
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
-  }
-});
-
-app.post("/addresses", async (req, res) => {
-  const { address, crypto_type, category, description, source } = req.body;
-  if (!isValidCryptoAddress(address)) return res.status(400).json({ error: "Invalid crypto address" });
+app.post("/scrape", async (req, res) => {
+  const { url, source } = req.body;
+  if (!url) return res.status(400).json({ error: "Missing URL" });
 
   try {
-    const query = `
-      INSERT INTO addresses(address, crypto_type, category, description, source, last_seen)
-      VALUES ($1,$2,$3,$4,$5,NOW())
-      RETURNING *
-    `;
-    const { rows } = await pool.query(query, [address, crypto_type, category, description, source]);
-    res.json(rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
-  }
-});
+    const response = await fetch(url);
+    const data = await response.json();
 
-// Export addresses as CSV file..
-app.get("/export/csv", async (req, res) => {
-  try {
-    const { rows } = await pool.query("SELECT * FROM addresses");
-    const csvWriter = createObjectCsvWriter({
-      path: "addresses_export.csv",
-      header: [
-        {id: 'id', title: 'ID'},
-        {id: 'address', title: 'Address'},
-        {id: 'crypto_type', title: 'Crypto Type'},
-        {id: 'category', title: 'Category'},
-        {id: 'description', title: 'Description'},
-        {id: 'source', title: 'Source'},
-        {id: 'last_seen', title: 'Last Seen'}
-      ]
+    // Blockchain-style transaction
+    const transaction = createTransaction(data);
+
+    // Flatten into records
+    const records = Array.isArray(data) ? data : [data];
+    records.forEach(r => {
+      r.source = source || url;
+      r.last_scan = new Date().toISOString();
     });
-    await csvWriter.writeRecords(rows);
-    res.download("addresses_export.csv");
+
+    // Insert into Supabase
+    const { error } = await supabase.from("crypto_records").insert(records);
+    if (error) throw error;
+
+    const analysis = analyzeRecords(records);
+
+    res.json({
+      message: "Scraping successful",
+      transaction,
+      analysis
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Export failed" });
+    res.status(500).json({ error: "Scraping failed", details: err.message });
   }
 });
 
-// scraper endpoint
-app.get("/scrape-sample", async (req, res) => {
+// scraping via scraper.js..
+app.post("/scrape-manual", async (req, res) => {
+  try {
+    await scraper.scrapeAllSources();
+    res.json({ message: "Manual scraping completed" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+  //  File Upload (CSV/JSON)
+// app.post("/process-file", upload.single("file"), async (req, res) => {
+//   const file = req.file;
+//   if (!file) return res.status(400).json({ error: "File missing", entities: [], clusters: [], alerts: [] });
 
-    const sampleAddresses = [
-    { address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", crypto_type: "BTC", category: "Darknet", description: "Example forum post", source: "forum.xyz" },
-    { address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e", crypto_type: "ETH", category: "Scam", description: "News article", source: "news.com" }
-  ];
+//   try {
+//     const content = file.buffer.toString();
+//     let records = [];
+
+//     if (file.mimetype === "application/json") {
+//       const parsed = JSON.parse(content);
+//       records = parsed.records || [];
+//     } else {
+//       records = await new Promise((resolve, reject) => {
+//         parse(content, { columns: true, skip_empty_lines: true }, (err, output) => {
+//           if (err) reject(err);
+//           else resolve(output);
+//         });
+//       });
+//     }
+
+//     await supabase.from("crypto_records").insert(records);
+
+//     const entities = [];
+//     const clusters = [];
+//     const alerts = [];
+
+//     records.forEach((r) => {
+//       if (r.name) entities.push({ value: r.name, type: "Name" });
+//       if (r.phone) entities.push({ value: r.phone, type: "Phone" });
+//       if (r.email) entities.push({ value: r.email, type: "Email" });
+//       if (r.wallet) entities.push({ value: r.wallet, type: "Wallet" });
+//       if (r.bank_account) entities.push({ value: r.bank_account, type: "Bank Account" });
+
+//       if (r.transaction_amount > 40000) clusters.push("High-value transactions group");
+//       if (r.email && r.email.endsWith(".onion")) alerts.push(`⚠️ Suspicious email domain: ${r.email}`);
+//       if (r.wallet && r.wallet.startsWith("INVALID")) alerts.push(`⚠️ Invalid wallet format: ${r.wallet}`);
+//     });
+
+//     res.json({ entities, clusters, alerts });
+
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message, entities: [], clusters: [], alerts: [] });
+//   }
+// });
+app.post("/process-file", upload.single("file"), async (req, res) => {
+  const file = req.file;
+  if (!file) return res.status(400).json({ error: "File missing", entities: [], clusters: [], alerts: [] });
 
   try {
-    for (let a of sampleAddresses) {
-      await pool.query(
-        `INSERT INTO addresses(address, crypto_type, category, description, source, last_seen)
-        VALUES($1,$2,$3,$4,$5,NOW()) ON CONFLICT(address) DO NOTHING`,
-        [a.address, a.crypto_type, a.category, a.description, a.source]
-      );
+    const content = file.buffer.toString();
+    let records = [];
+
+    if (file.mimetype === "application/json") {
+      const parsed = JSON.parse(content);
+      records = parsed.records || [];
+    } else {
+      records = await new Promise((resolve, reject) => {
+        parse(content, { columns: true, skip_empty_lines: true }, (err, output) => {
+          if (err) reject(err);
+          else resolve(output);
+        });
+      });
     }
-    res.json({ message: "Sample addresses scraped & stored" });
+
+    const formattedRecords = records.map(r => ({
+      name: r.name || null,
+      phone: r.phone || null,
+      email: r.email || null,
+      wallet: r.wallet || null,
+      bank_account: r.bank_account || null,
+      transaction_amount: r.transaction_amount || 0
+    }));
+
+    await supabase.from("crypto_records").insert(formattedRecords);
+
+    // Extract entities, clusters, alerts
+    const entities = new Map();
+    const clusters = [];
+    const alerts = [];
+
+    formattedRecords.forEach(r => {
+      if (r.name) entities.set(r.name, "Name");
+      if (r.phone) entities.set(r.phone, "Phone");
+      if (r.email) entities.set(r.email, "Email");
+      if (r.wallet) entities.set(r.wallet, "Wallet");
+      if (r.bank_account) entities.set(r.bank_account, "Bank Account");
+
+      if (r.transaction_amount > 40000) clusters.push("High-value transactions group");
+      if (r.email && r.email.endsWith(".onion")) alerts.push(`⚠️ Suspicious email domain: ${r.email}`);
+      if (r.wallet && r.wallet.startsWith("INVALID")) alerts.push(`⚠️ Invalid wallet format: ${r.wallet}`);
+    });
+
+    res.json({ entities: Array.from(entities, ([value, type]) => ({ value, type })), clusters, alerts });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Scraper failed" });
+    res.status(500).json({ error: err.message, entities: [], clusters: [], alerts: [] });
+  }
+});
+  //  Query Endpoint
+app.get("/search", async (req, res) => {
+  const { wallet, name, from, to } = req.query;
+
+  try {
+    let query = supabase.from("crypto_records").select("*");
+
+    if (wallet) query = query.ilike("wallet", `%${wallet}%`);
+    if (name) query = query.ilike("name", `%${name}%`);
+    if (from && to) query = query.gte("last_scan", from).lte("last_scan", to);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
+  //  Export Endpoint (CSV/JSON)
+app.get("/export", async (req, res) => {
+  const { format } = req.query;
+  try {
+    const { data, error } = await supabase.from("crypto_records").select("*");
+    if (error) throw error;
+
+    if (format === "csv") {
+      const headers = Object.keys(data[0] || {}).join(",") + "\n";
+      const rows = data.map(r => Object.values(r).join(",")).join("\n");
+      res.header("Content-Type", "text/csv");
+      res.attachment("export.csv");
+      return res.send(headers + rows);
+    } else {
+      res.json(data);
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
