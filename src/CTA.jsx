@@ -1,4 +1,3 @@
-// CryptoScraperCTA.jsx
 import React, { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -57,8 +56,8 @@ export default function CryptoScraperCTA() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <a
-                href="#demo"
+              <Link
+                to={"/demo-page"}
                 className="inline-flex items-center gap-3 bg-white text-slate-900 font-semibold px-5 py-3 rounded-full shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 transition"
                 data-aos="zoom-in"
               >
@@ -66,7 +65,7 @@ export default function CryptoScraperCTA() {
                 <svg width="16" height="16" viewBox="0 0 24 24" className="opacity-90">
                   <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                 </svg>
-              </a>
+              </Link>
 
               <Link to={"/features"}
                 className="inline-flex items-center gap-2 border border-slate-700 text-slate-200 px-4 py-3 rounded-lg hover:bg-slate-800 transition"
@@ -76,7 +75,6 @@ export default function CryptoScraperCTA() {
               </Link>
             </div>
 
-            {/* quick stats */}
             <div className="mt-8 grid grid-cols-3 gap-3" data-aos="fade-up">
               <div className="bg-slate-800/40 p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold">1.2M+</div>
@@ -93,7 +91,6 @@ export default function CryptoScraperCTA() {
             </div>
           </div>
 
-          {/* Mock dashboard preview */}
           <div data-aos="fade-left">
             <div className="rounded-2xl bg-gradient-to-br from-slate-900/70 to-slate-800/60 p-6 shadow-2xl border border-slate-700">
               <div className="flex items-start justify-between">
@@ -151,7 +148,7 @@ export default function CryptoScraperCTA() {
           </div>
         </div>
 
-        {/* FEATURES */}
+        {/* features */}
         <section className="mt-16 grid md:grid-cols-3 gap-6" data-aos="fade-up">
           {[
             {
@@ -201,7 +198,7 @@ export default function CryptoScraperCTA() {
           ))}
         </section>
 
-        {/* How it works */}
+        {/* working */}
         <section className="mt-16 grid md:grid-cols-3 gap-8 items-start" data-aos="fade-up">
           <div className="md:col-span-2">
             <h3 className="text-2xl font-bold">How it works</h3>
@@ -234,7 +231,7 @@ export default function CryptoScraperCTA() {
             </ol>
           </div>
 
-          {/* CTA card */}
+          {/* card*/}
           <aside className="bg-gradient-to-br from-slate-900/60 to-slate-800/50 border border-slate-700 rounded-2xl p-6">
             <div>
               <div className="text-xs text-slate-400">Trusted for investigations</div>
@@ -242,10 +239,10 @@ export default function CryptoScraperCTA() {
               <p className="mt-3 text-sm text-slate-300">Export historical timelines, automate alerts, and integrate with SIEM or case management via JSON/CSV.</p>
 
               <div className="mt-6 grid gap-3">
-                <a className="inline-flex items-center justify-center px-4 py-3 rounded-md bg-white text-slate-900 font-semibold" href="#demo">
+                <Link to={"/demo-page"} className="inline-flex items-center justify-center px-4 py-3 rounded-md bg-white text-slate-900 font-semibold" href="#demo">
                   Try Demo
-                </a>
-                <button className="px-4 py-3 rounded-md border border-slate-700 text-slate-200">Request API Access</button>
+                </Link>
+                <Link to={"/docs"} className="px-4 py-3 rounded-md border border-slate-700 text-slate-200">Request API Access</Link>
               </div>
 
               <div className="mt-5 text-xs text-slate-500">
@@ -255,7 +252,7 @@ export default function CryptoScraperCTA() {
           </aside>
         </section>
 
-        {/* Demo / Contact Form */}
+        {/* Form */}
         <section id="demo" className="mt-16 bg-slate-900/30 border border-slate-800 rounded-2xl p-6" data-aos="fade-up">
           <div className="grid md:grid-cols-2 gap-6 items-center">
             <div>
@@ -282,8 +279,9 @@ export default function CryptoScraperCTA() {
               </div>
 
               <div className="flex gap-3 justify-between">
-                <Link to={"/demo-page"} className="block bg-gradient-to-r from-indigo-600 to-pink-500 text-white font-semibold px-4 py-3 rounded-lg">Try Demo</Link>
-                <button className=" border border-slate-700 px-4 py-3 rounded-lg text-slate-200">Download Spec (PDF)</button>
+                <Link to={"/register"} className="block bg-gradient-to-r from-indigo-600 to-pink-500 text-white font-semibold px-4 py-3 rounded-lg">Sign up</Link>
+                {/* <button className=" border border-slate-700 px-4 py-3 rounded-lg text-slate-200">Download Spec (PDF)</button> */}
+                <Link to={"/demo-page"} className=" border border-slate-700 px-4 py-3 rounded-lg text-slate-200">Try demo</Link>
               </div>
               <div className="text-xs text-slate-500">We respond within 48 hours. (For demo scheduling only.)</div>
             </form>

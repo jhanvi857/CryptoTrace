@@ -1,0 +1,58 @@
+{
+  "records": [
+    {
+      "name": "Alice Johnson",
+      "phone": "+1-555-123-4567",
+      "email": "alice.j@example.com",
+      "wallet": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+      "bank_account": "CHASE-987654321",
+      "transaction_amount": 20000,
+      "transaction_date": "2023-08-15"
+    },
+    {
+      "name": "Bob Smith",
+      "phone": null,
+      "email": "bob.smith@mail.com",
+      "wallet": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+      "bank_account": null,
+      "transaction_amount": 15000,
+      "transaction_date": "2023-08-16"
+    },
+    {
+      "name": "Charlie Lee",
+      "phone": "+44-7712345678",
+      "email": "charlie.lee@example.com",
+      "wallet": "INVALID_WALLET_123",
+      "bank_account": "BARCLAYS-112233",
+      "transaction_amount": 8000,
+      "transaction_date": "2023-08-14"
+    },
+    {
+      "name": "Delta Corp.",
+      "phone": null,
+      "email": "admin@deltacorp.onion",
+      "wallet": "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy",
+      "bank_account": "HSBC-55667788",
+      "transaction_amount": 50000,
+      "transaction_date": "2023-08-12"
+    },
+    {
+      "name": "Eve Martinez",
+      "phone": "+55-21-99887766",
+      "email": "eve@mail.com",
+      "wallet": "0x3f5CE5FBFe3E9af3971dD833D26BA9b5C936f0bE",
+      "bank_account": null,
+      "transaction_amount": 3000,
+      "transaction_date": "2023-08-18"
+    },
+    {
+      "name": "Frank Ocean",
+      "phone": null,
+      "email": null,
+      "wallet": "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7k9g0d5",
+      "bank_account": null,
+      "transaction_amount": 1200,
+      "transaction_date": "2023-08-17"
+    }
+  ]
+}

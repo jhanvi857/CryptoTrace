@@ -132,3 +132,27 @@ SELECT c.address, c.crypto_type, s.url AS source_url, s.source_type, m.snippet, 
 FROM address_mentions m
 JOIN crypto_addresses c ON m.address_id = c.address_id
 JOIN sources s ON m.source_id = s.source_id;
+
+-- added at last
+CREATE TABLE IF NOT EXISTS crypto_records (
+    id BIGSERIAL PRIMARY KEY,
+    name TEXT,
+    phone TEXT,
+    email TEXT,
+    wallet TEXT,
+    bank_account TEXT,
+    transaction_amount NUMERIC,
+    transaction_date DATE,
+    inserted_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Table for known darknet wallets
+CREATE TABLE IF NOT EXISTS darknet_wallets (
+    wallet TEXT PRIMARY KEY
+);
+ALTER TABLE crypto_records
+ADD COLUMN last_scan TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE crypto_records
+ADD COLUMN source text;
+select * from crypto_records;

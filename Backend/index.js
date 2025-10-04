@@ -141,7 +141,6 @@ app.post("/process-file", upload.single("file"), async (req, res) => {
 
     await supabase.from("crypto_records").insert(formattedRecords);
 
-    // Extract entities, clusters, alerts
     const entities = new Map();
     const clusters = [];
     const alerts = [];
@@ -164,7 +163,7 @@ app.post("/process-file", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: err.message, entities: [], clusters: [], alerts: [] });
   }
 });
-  //  Query Endpoint
+  //  Query Endpoint..
 app.get("/search", async (req, res) => {
   const { wallet, name, from, to } = req.query;
 
@@ -184,7 +183,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
-  //  Export Endpoint (CSV/JSON)
+  //  Export Endpoint ..
 app.get("/export", async (req, res) => {
   const { format } = req.query;
   try {
@@ -210,7 +209,6 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 const crypto = require("crypto");
 
-// Transaction creator
 function createTransaction(payload) {
   const hash = crypto.createHash("sha256")
     .update(JSON.stringify(payload))
@@ -223,14 +221,14 @@ function createTransaction(payload) {
   };
 }
 
-// Crypto wallet validation
+// Crypto wallet validation..
 function isValidCryptoAddress(address) {
   const btcRegex = /^(1|3|bc1)[a-zA-Z0-9]{25,39}$/;
   const ethRegex = /^0x[a-fA-F0-9]{40}$/;
   return btcRegex.test(address) || ethRegex.test(address);
 }
 
-// Entity Analysis + Alerts
+// Entity analysis and alerts..
 function analyzeRecords(records) {
   const entities = [];
   const clusters = new Set();
