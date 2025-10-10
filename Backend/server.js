@@ -180,20 +180,42 @@ router.get("/profile", async (req, res) => {
 });
 
 //  auth middleware..
-function checkAuth(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader) return res.status(403).json({ error: "No token provided" });
+// function checkAuth(req, res, next) {
+//   const authHeader = req.headers["authorization"];
+//   if (!authHeader) return res.status(403).json({ error: "No token provided" });
 
-  const token = authHeader.split(" ")[1]; 
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
+//   const token = authHeader.split(" ")[1]; 
+//   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
-  jwt.verify(token, process.env.JWT_SECRET || "fallbacksecret", (err, decoded) => {
-    if (err) return res.status(401).json({ error: "Invalid token payload" });
-    if (!decoded.user_id) return res.status(401).json({ error: "Invalid token payload" });
+//   jwt.verify(token, process.env.JWT_SECRET || "fallbacksecret", (err, decoded) => {
+//     if (err) return res.status(401).json({ error: "Invalid token payload" });
+//     if (!decoded.user_id) return res.status(401).json({ error: "Invalid token payload" });
+//     req.userId = decoded.user_id;
+//     next();
+//   });
+// }
+async function checkAuth(req, res, next) {
+  try {
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) return res.status(403).json({ error: "No token provided" });
+
+    const token = authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader;
+    const SECRET = process.env.JWT_SECRET || "fallbacksecret";
+
+    const decoded = jwt.verify(token, SECRET);
+
+    if (!decoded || !decoded.user_id) {
+      return res.status(401).json({ error: "Invalid token payload" });
+    }
+
     req.userId = decoded.user_id;
     next();
-  });
+  } catch (err) {
+    console.error("Auth error:", err.message);
+    res.status(401).json({ error: "Invalid or expired token" });
+  }
 }
+
 
 // search saving..
 router.post("/user/save-search", checkAuth, async (req, res) => {
@@ -234,7 +256,7 @@ router.get("/user/saved", checkAuth, async (req, res) => {
   }
 });
 
-// open and delete functionality 
+// open and delete functionality..
 router.get("/user/saved/:id", checkAuth, async (req, res) => {
   const userId = req.userId;
   const { id } = req.params;

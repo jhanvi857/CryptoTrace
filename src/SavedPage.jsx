@@ -75,7 +75,7 @@ const handleDelete = async (id) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">Saved Investigations</h2>
+      <h2 className="text-2xl font-semibold mb-4 mt-16 text-white text-center">Saved Investigations</h2>
 
       <div className="grid gap-3">
         {savedSearches.map((s, i) => (

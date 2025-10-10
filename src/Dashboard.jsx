@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Search, Filter, Download } from "lucide-react";
 import GraphView from "./components/GraphView";
 import SaveSearchButton from "./components/SaveSearchButton";
+import ExportDropdown from "./components/ExportDropdown";
 
 export default function Dashboard() {
   const location = useLocation();
@@ -84,12 +85,7 @@ export default function Dashboard() {
           <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-pink-500 bg-clip-text text-transparent">
             Investigation Dashboard
           </h2>
-          <button
-            onClick={exportData}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md hover:shadow-lg transition"
-          >
-            <Download className="h-4 w-4" /> Export Report
-          </button>
+          <ExportDropdown/>
         </div>
 
         {/* Search and Filter */}

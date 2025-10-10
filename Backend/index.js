@@ -64,7 +64,7 @@ app.post("/scrape-manual", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-  //  File Upload (CSV/JSON)
+  //  File Upload route..
 // app.post("/process-file", upload.single("file"), async (req, res) => {
 //   const file = req.file;
 //   if (!file) return res.status(400).json({ error: "File missing", entities: [], clusters: [], alerts: [] });
@@ -207,7 +207,6 @@ app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-const crypto = require("crypto");
 
 function createTransaction(payload) {
   const hash = crypto.createHash("sha256")
